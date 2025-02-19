@@ -17,17 +17,33 @@ const db = firebase.firestore();
 
 // Function to show error messages
 function showError(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-popup';
-    errorDiv.innerHTML = `
+    const errorPopup = document.createElement('div');
+    errorPopup.className = 'error-popup';
+    errorPopup.innerHTML = `
         <i class="fas fa-exclamation-circle"></i>
         <span>${message}</span>
     `;
-    document.body.appendChild(errorDiv);
+    document.body.appendChild(errorPopup);
     
-    // Remove the error message after 3 seconds
+    // Remove the error popup after 3 seconds
     setTimeout(() => {
-        errorDiv.remove();
+        errorPopup.remove();
+    }, 3000);
+}
+
+// Function to show success messages
+function showSuccess(message) {
+    const successPopup = document.createElement('div');
+    successPopup.className = 'success-popup';
+    successPopup.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(successPopup);
+    
+    // Remove the success popup after 3 seconds
+    setTimeout(() => {
+        successPopup.remove();
     }, 3000);
 }
 
@@ -42,6 +58,21 @@ function handleLogout() {
 // Function to update pages with user data
 function updatePage() {
     const user = auth.currentUser;
+    const parentData = JSON.parse(sessionStorage.getItem('parentData'));
+    
+    // If it's a parent session
+    if (parentData && parentData.role === 'parent') {
+        const currentPage = window.location.pathname.split('/').pop();
+        
+        if (currentPage === 'parents.html') {
+            // Load parent dashboard data
+            loadParentDashboard(parentData);
+        } else if (currentPage === 'index.html') {
+            window.location.href = 'parents.html';
+        }
+        return;
+    }
+
     if (!user) {
         console.log('No authenticated user');
         window.location.href = 'index.html';
@@ -73,6 +104,11 @@ function updatePage() {
             console.error('Error fetching user data:', error);
             showError('Unable to load user data. Please try again later.');
         });
+
+    const currentPage = window.location.pathname.split('/').pop();
+    if (currentPage === 'inbox.html') {
+        loadMessages();
+    }
 }
 
 // Function to update page content with user data
@@ -83,13 +119,25 @@ function updatePageContent(userData) {
     if (currentPage === 'home.html') {
         const attendanceQR = document.getElementById('attendanceQR');
         if (attendanceQR && userData.email) {
-            console.log('Generating QR code for:', userData.email);
+            // Create a unique, permanent attendance code for the user
+            const attendanceCode = `ATT-${userData.email}-${userData.uid}`;
+            console.log('Generating permanent QR code for attendance:', attendanceCode);
+            
+            // Clear existing QR code
             attendanceQR.innerHTML = '';
+            
+            // Generate new QR code with permanent attendance code
             new QRCode(attendanceQR, {
-                text: userData.email,
+                text: attendanceCode,
                 width: 128,
                 height: 128
             });
+
+            // Update the footer text to remove the "Updates every 30 seconds" message
+            const qrFooter = document.querySelector('.qr-footer span');
+            if (qrFooter) {
+                qrFooter.textContent = 'Your Attendance QR Code';
+            }
         }
     } else if (currentPage === 'profile.html') {
         console.log('Updating profile elements');
@@ -148,6 +196,12 @@ function updatePageContent(userData) {
 
 // Function to create new user data
 function createNewUserData(email) {
+    const uid = auth.currentUser.uid;
+    const parentCode = 'PAR' + Math.random().toString(36).substr(2, 6).toUpperCase();
+    
+    // Create the parent code document
+    createParentCodeDocument(uid, parentCode);
+    
     return {
         email: email,
         name: email.split('@')[0],
@@ -156,9 +210,24 @@ function createNewUserData(email) {
         grade: '',
         phoneNumber: '',
         parentPhoneNumber: '',
-        parentCode: 'PAR' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        parentCode: parentCode,
+        attendanceCode: `ATT-${email}-${uid}`,
         role: 'student'
     };
+}
+
+// Function to create parent code document
+async function createParentCodeDocument(studentId, parentCode) {
+    try {
+        await db.collection('parentCodes')
+            .doc(parentCode)
+            .set({
+                studentId: studentId,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+    } catch (error) {
+        console.error('Error creating parent code document:', error);
+    }
 }
 
 // Update handleLogin function to use users collection
@@ -258,5 +327,251 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePage();
         }
     }
+
+    // Add tab switching functionality
+    const tabs = document.querySelectorAll('.tab');
+    const forms = document.querySelectorAll('.auth-form');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            // Remove active class from all tabs and forms
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+
+            // Add active class to clicked tab
+            tab.classList.add('active');
+
+            // Show corresponding form
+            const formId = tab.dataset.tab + '-form';
+            document.getElementById(formId)?.classList.add('active');
+        });
+    });
+
+    // Handle signup link click
+    const signupLink = document.querySelector('.signup-link');
+    if (signupLink) {
+        signupLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Remove active class from all tabs and forms
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+            
+            // Show signup form and activate signup tab
+            document.getElementById('signup-form').classList.add('active');
+            document.querySelector('[data-tab="signup"]')?.classList.add('active');
+        });
+    }
+
+    // Add parent form submit handler
+    const parentForm = document.getElementById('parent-form');
+    if (parentForm) {
+        console.log('Adding parent form submit handler');
+        parentForm.addEventListener('submit', handleParentLogin);
+        
+        // Auto-capitalize parent code input
+        const parentCodeInput = document.getElementById('parentCodeInput');
+        if (parentCodeInput) {
+            parentCodeInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase();
+            });
+        }
+    }
+
+    // Add this function for sending messages
+    const messageForm = document.querySelector('.message-form');
+    if (messageForm) {
+        messageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const recipientType = document.getElementById('recipientType').value;
+            const messageText = document.getElementById('messageText').value;
+            
+            if (!recipientType || !messageText) {
+                showError('Please fill in all fields');
+                return;
+            }
+            
+            await sendMessage(recipientType, messageText);
+            document.getElementById('messageText').value = '';
+        });
+    }
 });
+
+// Function to handle parent login
+async function handleParentLogin(event) {
+    event.preventDefault();
+    console.log('Handling parent login...');
+    const parentCode = document.getElementById('parentCodeInput').value.trim().toUpperCase();
+    
+    if (!parentCode) {
+        showError('Please enter a parent code');
+        return;
+    }
+
+    try {
+        console.log('Querying Firestore with parent code:', parentCode);
+        
+        // Query for the student
+        const querySnapshot = await db.collection('users')
+            .where('parentCode', '==', parentCode)
+            .get();
+
+        if (querySnapshot.empty) {
+            console.log('No matching parent code found');
+            showError('Invalid parent code');
+            return;
+        }
+
+        // Get the student document
+        const studentDoc = querySnapshot.docs[0];
+        const studentData = studentDoc.data();
+        console.log('Found student data:', studentData);
+
+        // Store parent session data
+        const parentSession = {
+            studentId: studentDoc.id,
+            studentName: studentData.name,
+            studentGrade: studentData.grade,
+            parentCode: parentCode,
+            role: 'parent',
+            timestamp: new Date().toISOString()
+        };
+
+        console.log('Storing parent session:', parentSession);
+        sessionStorage.setItem('parentData', JSON.stringify(parentSession));
+
+        // Redirect to parent dashboard
+        console.log('Redirecting to parent dashboard...');
+        window.location.href = 'parents.html';
+
+    } catch (error) {
+        console.error('Parent login error:', error);
+        showError('Error during login. Please try again.');
+    }
+}
+
+// Add this function to check parent access
+function checkParentAccess() {
+    const parentData = JSON.parse(sessionStorage.getItem('parentData'));
+    if (!parentData) {
+        window.location.href = 'index.html';
+        return null;
+    }
+    return parentData;
+}
+
+// Update the loadParentDashboard function
+async function loadParentDashboard() {
+    const parentData = checkParentAccess();
+    if (!parentData) return;
+
+    try {
+        // Get student data
+        const studentDoc = await db.collection('users').doc(parentData.studentId).get();
+        if (studentDoc.exists) {
+            const studentData = studentDoc.data();
+            
+            // Update dashboard elements
+            document.getElementById('studentName').textContent = studentData.name;
+            document.getElementById('studentGrade').textContent = studentData.grade;
+            document.getElementById('studentEmail').textContent = studentData.email;
+            document.getElementById('studentPhone').textContent = studentData.phoneNumber || 'Not set';
+            
+            // Get attendance records
+            const attendanceQuery = await db.collection('attendance')
+                .where('studentId', '==', parentData.studentId)
+                .orderBy('timestamp', 'desc')
+                .limit(10)
+                .get();
+            
+            // Update attendance display
+            const attendanceList = document.getElementById('attendanceList');
+            if (attendanceList) {
+                attendanceList.innerHTML = '';
+                attendanceQuery.forEach(doc => {
+                    const attendance = doc.data();
+                    const li = document.createElement('li');
+                    li.textContent = `${new Date(attendance.timestamp.toDate()).toLocaleString()}: ${attendance.status}`;
+                    attendanceList.appendChild(li);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error loading parent dashboard:', error);
+        showError('Error loading dashboard data');
+    }
+}
+
+// Add these functions for message handling
+async function loadMessages() {
+    const user = auth.currentUser;
+    const userData = JSON.parse(sessionStorage.getItem('userData'));
+    
+    if (!user || !userData) return;
+
+    try {
+        let messagesQuery;
+        
+        if (userData.role === 'student') {
+            // Query for student messages
+            messagesQuery = db.collection('messages').where('recipientId', '==', user.uid)
+                .or('recipientType', '==', 'allStudents')
+                .or('recipientType', '==', `senior${userData.grade}Students`);
+        } else if (userData.role === 'assistant') {
+            // Assistants can see all messages they've sent
+            messagesQuery = db.collection('messages').where('senderId', '==', user.uid);
+        }
+
+        const snapshot = await messagesQuery.get();
+        const messagesList = document.getElementById('messagesList');
+        if (messagesList) {
+            messagesList.innerHTML = '';
+            snapshot.forEach(doc => {
+                const message = doc.data();
+                const messageElement = createMessageElement(message);
+                messagesList.appendChild(messageElement);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading messages:', error);
+        showError('Failed to load messages');
+    }
+}
+
+// Function to create message elements
+function createMessageElement(message) {
+    const div = document.createElement('div');
+    div.className = 'message-item';
+    if (!message.read) div.classList.add('unread');
+    
+    div.innerHTML = `
+        <div class="message-icon">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div class="message-content">
+            <div class="message-text">${message.content}</div>
+            <div class="message-time">${new Date(message.timestamp).toLocaleString()}</div>
+        </div>
+    `;
+    return div;
+}
+
+// Add this function for sending messages
+async function sendMessage(recipientType, content) {
+    if (!auth.currentUser) return;
+    
+    try {
+        await db.collection('messages').add({
+            senderId: auth.currentUser.uid,
+            recipientType: recipientType,
+            content: content,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            read: false
+        });
+        
+        showSuccess('Message sent successfully');
+    } catch (error) {
+        console.error('Error sending message:', error);
+        showError('Failed to send message');
+    }
+}
 
