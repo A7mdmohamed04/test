@@ -18,10 +18,17 @@ const db = firebase.firestore();
 // Function to show error messages
 function showError(message) {
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = message;
+    errorDiv.className = 'error-popup';
+    errorDiv.innerHTML = `
+        <i class="fas fa-exclamation-circle"></i>
+        <span>${message}</span>
+    `;
     document.body.appendChild(errorDiv);
-    setTimeout(() => errorDiv.remove(), 5000);
+    
+    // Remove the error message after 3 seconds
+    setTimeout(() => {
+        errorDiv.remove();
+    }, 3000);
 }
 
 // Function to handle logout
@@ -34,12 +41,6 @@ function handleLogout() {
 
 // Function to update pages with user data
 function updatePage() {
-    const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
-    const currentPage = window.location.pathname.split('/').pop();
-    console.log('Updating page:', currentPage);
-    console.log('User data:', userData);
-
-    // Check if user is authenticated
     const user = auth.currentUser;
     if (!user) {
         console.log('No authenticated user');
@@ -47,45 +48,37 @@ function updatePage() {
         return;
     }
 
-    // If no userData, try to fetch it
-    if (Object.keys(userData).length === 0) {
-        console.log('No user data, fetching from Firestore');
-        db.collection('students').doc(user.uid)
-            .get()
-            .then((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    sessionStorage.setItem('userData', JSON.stringify(data));
-                    updatePageContent(data);
-                } else {
-                    // Create new user document
-                    const newUserData = {
-                        email: user.email,
-                        createdAt: new Date().toISOString(),
-                        grade: 'Not Set',
-                        phone: 'Not Set',
-                        parentCode: 'PAR' + Math.random().toString(36).substr(2, 6).toUpperCase()
-                    };
-                    return db.collection('students').doc(user.uid)
-                        .set(newUserData)
-                        .then(() => {
-                            sessionStorage.setItem('userData', JSON.stringify(newUserData));
-                            updatePageContent(newUserData);
-                        });
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching user data:', error);
-                showError('Error loading user data');
-            });
-    } else {
-        updatePageContent(userData);
-    }
+    // Always fetch fresh data from Firestore from the users collection
+    console.log('Fetching fresh data from Firestore for user:', user.uid);
+    db.collection('users').doc(user.uid)  // Changed from 'students' to 'users'
+        .get()
+        .then((doc) => {
+            if (doc.exists) {
+                const userData = doc.data();
+                console.log('Fresh Firestore data:', userData);
+                sessionStorage.setItem('userData', JSON.stringify(userData));
+                updatePageContent(userData);
+            } else {
+                console.log('No document found, creating new one');
+                const newUserData = createNewUserData(user.email);
+                return db.collection('users').doc(user.uid)  // Changed from 'students' to 'users'
+                    .set(newUserData)
+                    .then(() => {
+                        sessionStorage.setItem('userData', JSON.stringify(newUserData));
+                        updatePageContent(newUserData);
+                    });
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+            showError('Unable to load user data. Please try again later.');
+        });
 }
 
 // Function to update page content with user data
 function updatePageContent(userData) {
     const currentPage = window.location.pathname.split('/').pop();
+    console.log('Updating content for:', currentPage, 'with data:', userData);
 
     if (currentPage === 'home.html') {
         const attendanceQR = document.getElementById('attendanceQR');
@@ -99,6 +92,8 @@ function updatePageContent(userData) {
             });
         }
     } else if (currentPage === 'profile.html') {
+        console.log('Updating profile elements');
+        
         const elements = {
             studentName: document.getElementById('studentName'),
             grade: document.getElementById('grade'),
@@ -109,24 +104,38 @@ function updatePageContent(userData) {
             qrCode: document.getElementById('qrCode')
         };
 
-        // Update profile elements
-        if (elements.studentName) elements.studentName.textContent = userData.email || 'N/A';
-        if (elements.studentEmail) elements.studentEmail.textContent = userData.email || 'N/A';
-        if (elements.grade) elements.grade.textContent = userData.grade || 'N/A';
-        if (elements.studentGrade) elements.studentGrade.textContent = userData.grade || 'N/A';
-        if (elements.studentPhone) elements.studentPhone.textContent = userData.phone || 'N/A';
-        if (elements.parentCode && userData.parentCode) {
-            elements.parentCode.textContent = userData.parentCode;
-            
-            // Generate parent QR code
-            if (elements.qrCode) {
-                elements.qrCode.innerHTML = '';
-                new QRCode(elements.qrCode, {
-                    text: userData.parentCode,
-                    width: 128,
-                    height: 128
-                });
-            }
+        // Update profile elements with values directly from Firestore
+        if (elements.studentName) {
+            elements.studentName.textContent = userData.name || 'Click to set name';
+            elements.studentName.classList.toggle('not-set', !userData.name);
+        }
+        if (elements.grade) {
+            elements.grade.textContent = userData.grade || 'Click to set grade';
+            elements.grade.classList.toggle('not-set', !userData.grade);
+        }
+        if (elements.studentEmail) {
+            elements.studentEmail.textContent = userData.email;
+        }
+        if (elements.studentPhone) {
+            elements.studentPhone.textContent = userData.phoneNumber || 'Click to add phone number';
+            elements.studentPhone.classList.toggle('not-set', !userData.phoneNumber);
+        }
+        if (elements.studentGrade) {
+            elements.studentGrade.textContent = userData.grade || 'Click to set grade';
+            elements.studentGrade.classList.toggle('not-set', !userData.grade);
+        }
+        if (elements.parentCode) {
+            elements.parentCode.textContent = userData.parentCode || 'Not Set';
+        }
+        
+        // Generate QR code if container exists
+        if (elements.qrCode && userData.parentCode) {
+            elements.qrCode.innerHTML = '';
+            new QRCode(elements.qrCode, {
+                text: userData.parentCode,
+                width: 128,
+                height: 128
+            });
         }
 
         // Setup logout button
@@ -137,7 +146,22 @@ function updatePageContent(userData) {
     }
 }
 
-// Function to handle login
+// Function to create new user data
+function createNewUserData(email) {
+    return {
+        email: email,
+        name: email.split('@')[0],
+        createdAt: new Date(),
+        lastLogin: new Date(),
+        grade: '',
+        phoneNumber: '',
+        parentPhoneNumber: '',
+        parentCode: 'PAR' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+        role: 'student'
+    };
+}
+
+// Update handleLogin function to use users collection
 function handleLogin(event) {
     console.log('Login attempt...'); // Debug log
     event.preventDefault();
@@ -148,26 +172,22 @@ function handleLogin(event) {
 
     auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            console.log('Authentication successful, UID:', userCredential.user.uid); // Enhanced debug log
+            console.log('Authentication successful, UID:', userCredential.user.uid);
             
-            // First, try to get the user document
-            db.collection('students').doc(userCredential.user.uid)
+            // First, try to get the user document from users collection
+            db.collection('users').doc(userCredential.user.uid)  // Changed from 'students' to 'users'
                 .get()
                 .then((doc) => {
                     if (doc.exists) {
-                        console.log('User data found:', doc.data()); // Debug log
+                        console.log('User data found:', doc.data());
                         sessionStorage.setItem('userData', JSON.stringify(doc.data()));
                         window.location.href = 'home.html';
                     } else {
                         console.log('No existing document, creating new one...'); // Debug log
                         // Create a new document for the user
-                        const userData = {
-                            email: email,
-                            createdAt: new Date().toISOString(),
-                            // Add any other default fields you need
-                        };
+                        const userData = createNewUserData(email);
                         
-                        return db.collection('students').doc(userCredential.user.uid)
+                        return db.collection('users').doc(userCredential.user.uid)  // Changed from 'students' to 'users'
                             .set(userData)
                             .then(() => {
                                 console.log('New user document created');
@@ -194,60 +214,24 @@ function handleLogin(event) {
         });
 }
 
-// Add auth state change listener
+// Update auth state change listener
 auth.onAuthStateChanged((user) => {
     if (user) {
         console.log('User is signed in:', user.email);
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const currentPage = window.location.pathname.split('/').pop();
         
-        // If on index page and authenticated, redirect to home
         if (currentPage === 'index.html') {
             window.location.href = 'home.html';
-            return; // Stop execution after redirect
+            return;
         }
 
-        // Check if we have user data in session storage
-        const userData = JSON.parse(sessionStorage.getItem('userData') || '{}');
-        if (Object.keys(userData).length === 0) {
-            // If no data in session storage, fetch it
-            db.collection('students').doc(user.uid)
-                .get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        sessionStorage.setItem('userData', JSON.stringify(data));
-                        updatePage();
-                    } else {
-                        // Create new user document if it doesn't exist
-                        const newUserData = {
-                            email: user.email,
-                            createdAt: new Date().toISOString(),
-                            grade: 'Not Set',
-                            phone: 'Not Set',
-                            parentCode: 'PAR' + Math.random().toString(36).substr(2, 6).toUpperCase()
-                        };
-                        return db.collection('students').doc(user.uid)
-                            .set(newUserData)
-                            .then(() => {
-                                sessionStorage.setItem('userData', JSON.stringify(newUserData));
-                                updatePage();
-                            });
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching user data:', error);
-                    showError('Error loading user data');
-                });
-        } else {
-            updatePage();
-        }
+        // Always fetch fresh data when auth state changes
+        updatePage();
     } else {
         console.log('User is signed out');
         sessionStorage.removeItem('userData');
-        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-        // Only redirect to index if not already there and not on public pages
-        const publicPages = ['index.html'];
-        if (!publicPages.includes(currentPage)) {
+        const currentPage = window.location.pathname.split('/').pop();
+        if (currentPage !== 'index.html') {
             window.location.href = 'index.html';
         }
     }
