@@ -27,7 +27,6 @@
 
             <div class="auth-tabs">
                 <button class="tab active" data-tab="login">Student Login</button>
-                <button class="tab" data-tab="signup">Sign Up</button>
                 <button class="tab" data-tab="parent">Parent Login</button>
                 <button class="tab" data-tab="assistant">Assistant Login</button>
             </div>
@@ -44,6 +43,7 @@
                 </div>
                 <button type="submit" class="auth-button">Login</button>
                 <div class="form-footer">
+                    <p class="signup-prompt">Don't have an account? <a href="#" class="signup-link" data-tab="signup">Sign up</a></p>
                     <a href="#" class="forgot-password">Forgot Password?</a>
                 </div>
             </form>
@@ -82,15 +82,21 @@
                 <button type="submit" class="auth-button">Sign Up</button>
             </form>
 
-            <!-- Add Parent Login Form -->
+            <!-- Parent Login Form -->
             <form id="parent-form" class="auth-form">
                 <div class="input-group">
                     <label>Parent Code</label>
-                    <input type="text" id="parentCodeInput" required placeholder="Enter your parent code">
+                    <input type="text" 
+                           id="parentCodeInput" 
+                           required 
+                           placeholder="Enter your parent code"
+                           pattern="[A-Z0-9]{6}"
+                           maxlength="6">
+                    <small class="input-help">Enter the 6-character code provided in your child's profile</small>
                 </div>
                 <button type="submit" class="auth-button">Login as Parent</button>
                 <div class="form-footer">
-                    <p class="help-text">Contact the school if you've lost your parent code</p>
+                    <p class="help-text">The parent code can be found in your child's profile section</p>
                 </div>
             </form>
 
@@ -102,7 +108,6 @@
                 </div>
                 <button type="submit" class="auth-button">Login as Assistant</button>
                 <div class="form-footer">
-                    <p class="help-text">Contact administration for assistant access</p>
                 </div>
             </form>
         </div>
