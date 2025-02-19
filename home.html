@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link href="style/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add QRCode.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Add Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Banner section -->
+        <div class="banner">
+            <img src="data/images/home/home_banner1.png" alt="Mathematics with Mr Mohamed Abo Almagd" class="banner-image">
+        </div>
+
+        <!-- Quick Access Buttons -->
+        <div class="quick-access">
+            <a href="#inbox" class="quick-button">
+                <i class="fas fa-inbox"></i>
+                <span>Inbox</span>
+            </a>
+            <a href="#events" class="quick-button">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Events</span>
+            </a>
+            <a href="#schedule" class="quick-button">
+                <i class="fas fa-clock"></i>
+                <span>Schedule</span>
+            </a>
+        </div>
+
+        <!-- Main content section -->
+        <div class="main-content">
+            <!-- QR Code Section -->
+            <div class="qr-section">
+                <div class="qr-card">
+                    <div class="qr-header">
+                        <span>Scan QR Code</span>
+                    </div>
+                    <div class="qr-container">
+                        <div id="attendanceQR"></div>
+                    </div>
+                    <div class="qr-footer">
+                        <span>Updates every 30 seconds</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item active">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
+    <script type="module" src="functions/app.js"></script>
+</body>
+</html>

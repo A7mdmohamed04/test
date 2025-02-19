@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#4F46E5">
+    <title>Parent Dashboard</title>
+    <link href="style/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header with Actions -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>Parent Dashboard</h1>
+                <p>Monitor your child's attendance and schedule</p>
+            </div>
+            <div class="header-actions">
+                <button class="action-button" id="addChildBtn" aria-label="Add Child">
+                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                    <span>Add Child</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Child Selector with horizontal scroll -->
+        <div class="child-selector" id="childSelector" role="tablist">
+            <!-- Will be populated with child tabs -->
+        </div>
+
+        <!-- Student Information Cards -->
+        <div class="dashboard-grid" id="studentCardsContainer">
+            <!-- Will be populated with student data -->
+        </div>
+
+        <!-- Messages Section -->
+        <div class="messages-section">
+            <h2>Messages</h2>
+            <div class="messages-container">
+                <div class="messages-list" id="parentMessagesList">
+                    <!-- Messages will be populated here -->
+                </div>
+                <!-- Reply Form -->
+                <div class="reply-form">
+                    <textarea id="replyText" placeholder="Type your reply..."></textarea>
+                    <button id="sendReply" class="action-button">
+                        <i class="fas fa-paper-plane"></i>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Section -->
+        <div class="logout-section">
+            <button class="logout-button" id="logoutBtn" aria-label="Logout">
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modals with improved accessibility -->
+    <!-- Add Child Modal -->
+    <div class="modal" id="addChildModal" role="dialog" aria-labelledby="addChildTitle">
+        <div class="modal-content">
+            <button class="modal-close" id="closeAddChildModal" aria-label="Close modal">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-user-plus" aria-hidden="true"></i>
+            </div>
+            <h2 id="addChildTitle">Add Child</h2>
+            <p>Enter your child's parent code to link their account</p>
+            <div class="input-group">
+                <input type="text" id="parentCode" placeholder="Enter parent code" aria-label="Parent code">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelAddChild">Cancel</button>
+                <button class="btn-primary" id="confirmAddChild">Add Child</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal" id="logoutModal" role="dialog" aria-labelledby="logoutTitle">
+        <div class="modal-content">
+            <button class="modal-close" id="closeLogoutModal" aria-label="Close modal">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+            </div>
+            <h2 id="logoutTitle">Confirm Logout</h2>
+            <p>Are you sure you want to logout?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelLogout">Cancel</button>
+                <button class="btn-primary" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="functions/app.js"></script>
+</body>
+</html>

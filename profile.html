@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <link href="style/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- Add Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="profile-header">
+            <div class="profile-cover"></div>
+            <div class="profile-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="profile-info">
+                <h1 id="studentName">Student Name</h1>
+                <p id="grade">Grade Level</p>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <div class="card info-card">
+                <div class="card-header">
+                    <i class="fas fa-user"></i>
+                    <h3>Student Information</h3>
+                </div>
+                <div class="info-content">
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </span>
+                        <p id="studentEmail" class="info-value">student@example.com</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-phone"></i>
+                            Phone
+                        </span>
+                        <p id="studentPhone" class="info-value">+1234567890</p>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">
+                            <i class="fas fa-graduation-cap"></i>
+                            Grade
+                        </span>
+                        <p id="studentGrade" class="info-value">Senior 1</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card parent-card">
+                <div class="card-header">
+                    <i class="fas fa-users"></i>
+                    <h3>Parent Access</h3>
+                </div>
+                <div class="parent-content">
+                    <div class="parent-code-container">
+                        <span class="info-label">Parent's Code</span>
+                        <p id="parentCode" class="parent-code">PAR123</p>
+                    </div>
+                    <div class="qr-container">
+                        <div id="qrCode"></div>
+                        <p class="qr-instruction">Scan to access parent dashboard</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Logout Section -->
+        <div class="logout-section">
+            <button class="logout-button" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="profile.html" class="nav-item active">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="settings.html" class="nav-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to sign out of your account?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelLogout">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+                <button class="btn-primary" id="confirmLogout">
+                    <i class="fas fa-check"></i> Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="functions/app.js"></script>
+</body>
+</html>

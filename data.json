@@ -1,0 +1,16 @@
+{
+    "name": "test",
+    "code": "123",
+    "assistants": [
+        {
+            "code": "ASST001",
+            "name": "test",
+            "role": "Teaching Assistant"
+        },
+        {
+            "code": "ASST002",
+            "name": "test",
+            "role": "Lab Assistant"
+        }
+    ]
+}

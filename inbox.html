@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Inbox</title>
+    <link href="style/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Add Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>Inbox</h1>
+                <p>Your messages and notifications</p>
+            </div>
+        </div>
+
+        <!-- Messages List -->
+        <div class="messages-container">
+            <div class="messages-list" id="messagesList">
+                <!-- Messages will be populated here -->
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="home.html" class="nav-item">
+                <i class="fas fa-house"></i>
+                <span>Home</span>
+            </a>
+            <a href="edupal.html" class="nav-item">
+                <i class="fas fa-graduation-cap"></i>
+                <span>EduPal</span>
+            </a>
+            <a href="lessons.html" class="nav-item">
+                <i class="fas fa-book-open"></i>
+                <span>Lessons</span>
+            </a>
+            <a href="inbox.html" class="nav-item active">
+                <i class="fas fa-inbox"></i>
+                <span>Inbox</span>
+            </a>
+            <a href="profile.html" class="nav-item">
+                <i class="fas fa-circle-user"></i>
+                <span>Profile</span>
+            </a>
+        </nav>
+    </div>
+    <script type="module" src="functions/app.js"></script>
+</body>
+</html>

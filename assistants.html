@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant Dashboard</title>
+    <link href="style/main.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header with Logout -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>QR Scanner</h1>
+                <p>Scan student attendance QR codes</p>
+            </div>
+            <button class="logout-button" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+
+        <!-- Message Center -->
+        <div class="message-center">
+            <h2>Message Center</h2>
+            <div class="message-form">
+                <div class="recipient-selector">
+                    <select id="recipientType">
+                        <option value="">Select Recipient Type</option>
+                        <option value="all">All Users</option>
+                        <option value="allStudents">All Students</option>
+                        <option value="allParents">All Parents</option>
+                        <option value="senior1Students">Senior 1 Students</option>
+                        <option value="senior2Students">Senior 2 Students</option>
+                        <option value="senior3Students">Senior 3 Students</option>
+                        <option value="senior1Parents">Senior 1 Parents</option>
+                        <option value="senior2Parents">Senior 2 Parents</option>
+                        <option value="senior3Parents">Senior 3 Parents</option>
+                        <option value="individual">Individual User</option>
+                    </select>
+                    <input type="text" id="individualRecipient" placeholder="Enter student/parent ID" class="hidden">
+                </div>
+                <textarea id="messageText" placeholder="Type your message here..."></textarea>
+                <button id="sendMessage" class="action-button">
+                    <i class="fas fa-paper-plane"></i>
+                    Send Message
+                </button>
+            </div>
+        </div>
+
+        <!-- Scanner Section -->
+        <div class="scanner-section">
+            <div class="scanner-card">
+                <div id="qrScanner"></div>
+                <div class="scanner-overlay">
+                    <div class="scanner-guide"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Scans -->
+        <div class="scans-section">
+            <h2>Recent Scans</h2>
+            <div class="scans-list" id="recentScansList">
+                <!-- Scans will be added here dynamically -->
+            </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to logout?</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelLogout">Cancel</button>
+                <button class="btn-primary" id="confirmLogout">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="functions/app.js"></script>
+</body>
+</html>

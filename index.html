@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Portal - Login/Sign Up</title>
+    <link href="style/main.css" rel="stylesheet">
+    <link rel="icon" href="data:,">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="school-logo">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/>
+                    </svg>
+                </div>
+                <h1>Welcome Back</h1>
+                <p>Please sign in to continue</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="tab active" data-tab="login">Student Login</button>
+                <button class="tab" data-tab="signup">Sign Up</button>
+                <button class="tab" data-tab="parent">Parent Login</button>
+                <button class="tab" data-tab="assistant">Assistant Login</button>
+            </div>
+
+            <!-- Updated Login Form -->
+            <form id="login-form" class="auth-form active">
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required placeholder="Enter your email">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="auth-button">Login</button>
+                <div class="form-footer">
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="auth-form">
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" name="fullName" required placeholder="Enter your full name">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" name="email" required placeholder="Enter your email">
+                </div>
+                <div class="input-group">
+                    <label>Phone Number</label>
+                    <input type="tel" name="phoneNumber" required placeholder="Enter your phone number">
+                </div>
+                <div class="input-group">
+                    <label>Parent's Phone</label>
+                    <input type="tel" name="parentPhone" required placeholder="Enter parent's phone number">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" name="password" required placeholder="Create a password">
+                </div>
+                <div class="input-group">
+                    <label>Grade</label>
+                    <select name="grade" required>
+                        <option value="">Select your grade</option>
+                        <option value="senior1">Senior 1</option>
+                        <option value="senior2">Senior 2</option>
+                        <option value="senior3">Senior 3</option>
+                    </select>
+                </div>
+                <button type="submit" class="auth-button">Sign Up</button>
+            </form>
+
+            <!-- Add Parent Login Form -->
+            <form id="parent-form" class="auth-form">
+                <div class="input-group">
+                    <label>Parent Code</label>
+                    <input type="text" id="parentCodeInput" required placeholder="Enter your parent code">
+                </div>
+                <button type="submit" class="auth-button">Login as Parent</button>
+                <div class="form-footer">
+                    <p class="help-text">Contact the school if you've lost your parent code</p>
+                </div>
+            </form>
+
+            <!-- Add Assistant Login Form -->
+            <form id="assistant-form" class="auth-form">
+                <div class="input-group">
+                    <label>Assistant Code</label>
+                    <input type="text" id="assistantCodeInput" required placeholder="Enter your assistant code">
+                </div>
+                <button type="submit" class="auth-button">Login as Assistant</button>
+                <div class="form-footer">
+                    <p class="help-text">Contact administration for assistant access</p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="module" src="functions/app.js"></script>
+</body>
+</html>
