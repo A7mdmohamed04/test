@@ -32,6 +32,7 @@ body {
     min-height: 100vh;
     display: flex;
     line-height: 1.5;
+    padding-bottom: 100px; /* Added padding for floating navigation */
 }
 
 /* Dashboard Layout */
@@ -40,9 +41,10 @@ body {
     max-width: 1440px;
     margin: 0 auto;
     padding: 1rem;
-    min-height: 100vh;
+    min-height: calc(100vh - 100px); /* Adjust for nav bar */
     display: flex;
     flex-direction: column;
+    position: relative; /* Add this */
 }
 
 /* Card Styles */
@@ -755,18 +757,25 @@ body {
     border-color: var(--success);
 }
 
-/* Bottom Navigation Bar */
+/* Bottom Navigation Styles */
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--surface);
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.98);
+    padding: 1rem 1.5rem;
     display: flex;
-    justify-content: space-around;
-    padding: 0.75rem;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
     z-index: 1000;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 95%;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .nav-item {
@@ -774,22 +783,173 @@ body {
     flex-direction: column;
     align-items: center;
     text-decoration: none;
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
+    color: #666;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
     padding: 0.5rem;
+    min-width: 70px;
+}
+
+/* Icon gradient colors */
+.nav-item[data-icon="home"] i { 
+    background: linear-gradient(135deg, #4285f4, #1a73e8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item[data-icon="edupal"] i { 
+    background: linear-gradient(135deg, #34a853, #0f9d58);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item[data-icon="lessons"] i { 
+    background: linear-gradient(135deg, #fbbc05, #f57c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item[data-icon="profile"] i { 
+    background: linear-gradient(135deg, #9334ea, #7b1fa2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .nav-item i {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
 }
 
 .nav-item span {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    opacity: 0.8;
 }
 
-.nav-item.active {
-    color: var(--primary);
+/* Hover effect */
+.nav-item:hover {
+    transform: translateY(-2px);
+}
+
+.nav-item:hover i {
+    transform: scale(1.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .bottom-nav {
+        background: rgba(30, 34, 39, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item {
+        color: #999;
+    }
+
+    .nav-item span {
+        color: #fff;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 380px) {
+    .bottom-nav {
+        padding: 0.8rem 1rem;
+        bottom: 10px;
+    }
+
+    .nav-item {
+        min-width: 60px;
+    }
+
+    .nav-item i {
+        font-size: 1.4rem;
+    }
+
+    .nav-item span {
+        font-size: 0.7rem;
+    }
+}
+
+.nav-item[data-icon="lessons"] i { 
+    background: linear-gradient(135deg, #fbbc05, #f57c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item[data-icon="profile"] i { 
+    background: linear-gradient(135deg, #9334ea, #7b1fa2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item i {
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+}
+
+.nav-item span {
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+/* Hover effect */
+.nav-item:hover {
+    transform: translateY(-2px);
+}
+
+.nav-item:hover i {
+    transform: scale(1.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .bottom-nav {
+        background: rgba(30, 34, 39, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item {
+        color: #999;
+    }
+
+    .nav-item span {
+        color: #fff;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 380px) {
+    .bottom-nav {
+        padding: 0.8rem 1rem;
+        bottom: 10px;
+    }
+
+    .nav-item {
+        min-width: 60px;
+    }
+
+    .nav-item i {
+        font-size: 1.4rem;
+    }
+
+    .nav-item span {
+        font-size: 0.7rem;
+    }
+}
+
+/* Add padding to body to account for floating navigation */
+body {
+    padding-bottom: 100px;
 }
 
 /* Add these new styles for the profile page */
@@ -914,6 +1074,17 @@ body {
     color: var(--text-primary);
     font-size: 1rem;
     font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.info-value.not-set {
+    color: var(--text-tertiary);
+    font-style: italic;
+    cursor: pointer;
+}
+
+.info-value.not-set:hover {
+    color: var(--primary);
 }
 
 .parent-code-container {
@@ -1726,14 +1897,22 @@ body {
 /* Bottom Navigation */
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--surface);
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.98);
+    padding: 1rem 1.5rem;
     display: flex;
-    justify-content: space-around;
-    padding: 0.75rem;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    width: 95%;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .nav-item {
@@ -1741,21 +1920,101 @@ body {
     flex-direction: column;
     align-items: center;
     text-decoration: none;
-    color: var(--text-secondary);
-    transition: color 0.2s ease;
+    color: #666;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    padding: 0.5rem;
+    min-width: 70px;
 }
 
-.nav-item.active {
-    color: var(--primary);
+/* Icon gradient colors */
+.nav-item[data-icon="home"] i { 
+    background: linear-gradient(135deg, #4285f4, #1a73e8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item[data-icon="edupal"] i { 
+    background: linear-gradient(135deg, #34a853, #0f9d58);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item[data-icon="lessons"] i { 
+    background: linear-gradient(135deg, #fbbc05, #f57c00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-item[data-icon="profile"] i { 
+    background: linear-gradient(135deg, #9334ea, #7b1fa2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .nav-item i {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
 }
 
 .nav-item span {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+/* Hover effect */
+.nav-item:hover {
+    transform: translateY(-2px);
+}
+
+.nav-item:hover i {
+    transform: scale(1.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .bottom-nav {
+        background: rgba(30, 34, 39, 0.95);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item {
+        color: #999;
+    }
+
+    .nav-item span {
+        color: #fff;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 380px) {
+    .bottom-nav {
+        padding: 0.8rem 1rem;
+        bottom: 10px;
+    }
+
+    .nav-item {
+        min-width: 60px;
+    }
+
+    .nav-item i {
+        font-size: 1.4rem;
+    }
+
+    .nav-item span {
+        font-size: 0.7rem;
+    }
+}
+
+/* Add padding to body to account for floating navigation */
+body {
+    padding-bottom: 100px;
 }
 
 /* Responsive Design */
@@ -2085,4 +2344,60 @@ body {
     .message-item {
         padding: 0.75rem;
     }
+}
+
+/* Error Message Popup Styles */
+.error-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--error);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideDown 0.3s ease, fadeOut 0.3s ease 2.7s;
+    opacity: 0;
+}
+
+.error-popup i {
+    font-size: 1.2rem;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translate(-50%, -100%);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Profile Information Styles */
+.profile-info h1.not-set,
+.profile-info p.not-set {
+    color: var(--text-tertiary);
+    font-style: italic;
+    cursor: pointer;
+}
+
+.profile-info h1.not-set:hover,
+.profile-info p.not-set:hover {
+    color: var(--primary);
 }
