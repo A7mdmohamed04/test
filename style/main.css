@@ -463,6 +463,7 @@ body {
 
 .tab {
     flex: 1;
+    min-width: 33.33%;
     padding: 12px;
     border: none;
     background: none;
@@ -532,14 +533,40 @@ body {
 }
 
 .form-footer {
-    margin-top: 16px;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.signup-prompt {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.signup-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.signup-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
 }
 
 .forgot-password {
-    color: var(--primary);
+    color: var(--text-tertiary);
     text-decoration: none;
-    font-size: 14px;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: var(--primary);
+    text-decoration: underline;
 }
 
 @keyframes fadeIn {
@@ -2400,4 +2427,79 @@ body {
 .profile-info h1.not-set:hover,
 .profile-info p.not-set:hover {
     color: var(--primary);
+}
+
+.input-help {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.help-text {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 1rem;
+}
+
+#parentCodeInput {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: monospace;
+    font-size: 1.2rem;
+}
+
+/* Hide message components on parent dashboard */
+.parent-dashboard .messages-section,
+.parent-dashboard .reply-form,
+.parent-dashboard .messages-container {
+    display: none !important;
+}
+
+/* Keep message components visible only in assistant dashboard */
+.dashboard-container:not(.parent-dashboard) .messages-section,
+.dashboard-container:not(.parent-dashboard) .message-form,
+.dashboard-container:not(.parent-dashboard) .messages-container {
+    display: block;
+}
+
+/* Add these styles for message notifications */
+.message-notification {
+    position: relative;
+}
+
+.message-notification::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: var(--error);
+    border-radius: 50%;
+    display: none;
+}
+
+.message-notification.has-unread::after {
+    display: block;
+}
+
+/* Update message list styles */
+.messages-list {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.message-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: var(--surface);
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+.message-item.unread {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
 }
